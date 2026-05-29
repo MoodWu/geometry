@@ -119,6 +119,15 @@
         "ray1": "Point",
         "ray2": "Point"
       }
+    },
+    {
+      "type": "circle_by_radius",
+      "comment": "圆：圆心+半径值（替代 圆心+圆上一点 的构造方式）",
+      "fields": {
+        "id": "CircleName",
+        "center": "Point",
+        "radius": "Number"
+      }
     }
   ],
   "primitive_constraints": [
@@ -657,16 +666,6 @@
       }
     },
     {
-      "type": "arc",
-      "comment": "弧",
-      "fields": {
-        "id": "ArcName",
-        "circle": "Circle",
-        "start": "Point",
-        "end": "Point"
-      }
-    },
-    {
       "type": "central_angle",
       "comment": "圆心角",
       "fields": {
@@ -688,15 +687,6 @@
           "Point"
         ],
         "circle": "Circle"
-      }
-    },
-    {
-      "type": "circle_by_radius",
-      "comment": "圆心+半径值定义圆",
-      "fields": {
-        "id": "CircleName",
-        "center": "Point",
-        "radius": "Number"
       }
     }
   ],
@@ -1707,6 +1697,60 @@
           "line": "$line"
         }
       ]
+    },
+    {
+      "hir": "extension_point",
+      "comment": "延长线上的点 = 共线 + 在延长方向侧",
+      "variants": [
+        {
+          "when": {
+            "topology": "beyond_first"
+          },
+          "comment": "向起点方向延长：point-base[0]-base[1]",
+          "expand_to": [
+            {
+              "type": "collinear",
+              "points": [
+                "$point",
+                "$base[0]",
+                "$base[1]"
+              ]
+            },
+            {
+              "type": "between",
+              "points": [
+                "$point",
+                "$base[0]",
+                "$base[1]"
+              ]
+            }
+          ]
+        },
+        {
+          "when": {
+            "topology": "beyond_second"
+          },
+          "comment": "向终点方向延长：base[0]-base[1]-point",
+          "expand_to": [
+            {
+              "type": "collinear",
+              "points": [
+                "$base[0]",
+                "$base[1]",
+                "$point"
+              ]
+            },
+            {
+              "type": "between",
+              "points": [
+                "$base[0]",
+                "$base[1]",
+                "$point"
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "render_hints": [
@@ -1788,6 +1832,16 @@
       "fields": {
         "target": "ObjectRef",
         "thickness": "thin|normal|thick"
+      }
+    },
+    {
+      "hint": "arc",
+      "comment": "弧（圆的一部分，纯渲染）",
+      "fields": {
+        "circle": "Circle",
+        "start": "Point",
+        "end": "Point",
+        "direction": "minor|major"
       }
     }
   ]
