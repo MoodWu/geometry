@@ -339,6 +339,21 @@
         "center": "Point",
         "ratio": "Number"
       }
+    },
+    {
+      "type": "proportional_length",
+      "comment": "线段长度成比例",
+      "fields": {
+        "segment1": [
+          "Point",
+          "Point"
+        ],
+        "segment2": [
+          "Point",
+          "Point"
+        ],
+        "ratio": "Number"
+      }
     }
   ],
   "hir_constraints": [
@@ -390,13 +405,15 @@
     },
     {
       "type": "secant",
-      "comment": "割线",
+      "comment": "割线（与圆有两个交点）",
       "fields": {
         "line": [
           "Point",
           "Point"
         ],
-        "circle": "Circle"
+        "circle": "Circle",
+        "point1": "Point",
+        "point2": "Point"
       }
     },
     {
@@ -566,14 +583,15 @@
     },
     {
       "type": "cyclic_quadrilateral",
-      "comment": "圆内接四边形",
+      "comment": "圆内接四边形（四点共圆）",
       "fields": {
         "points": [
           "Point",
           "Point",
           "Point",
           "Point"
-        ]
+        ],
+        "circle": "Circle"
       }
     },
     {
@@ -1259,6 +1277,434 @@
           "type": "point_on_circle",
           "point": "$points[1]",
           "circle": "$circle"
+        }
+      ]
+    },
+    {
+      "hir": "congruent_triangle",
+      "comment": "全等三角形（按判定规则展开，顶点按顺序对应）",
+      "variants": [
+        {
+          "when": {
+            "rule": "SSS"
+          },
+          "comment": "边边边：三组对应边相等",
+          "expand_to": [
+            {
+              "type": "equal_length",
+              "segments": [
+                [
+                  "$triangles[0][0]",
+                  "$triangles[0][1]"
+                ],
+                [
+                  "$triangles[1][0]",
+                  "$triangles[1][1]"
+                ]
+              ]
+            },
+            {
+              "type": "equal_length",
+              "segments": [
+                [
+                  "$triangles[0][1]",
+                  "$triangles[0][2]"
+                ],
+                [
+                  "$triangles[1][1]",
+                  "$triangles[1][2]"
+                ]
+              ]
+            },
+            {
+              "type": "equal_length",
+              "segments": [
+                [
+                  "$triangles[0][2]",
+                  "$triangles[0][0]"
+                ],
+                [
+                  "$triangles[1][2]",
+                  "$triangles[1][0]"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "when": {
+            "rule": "SAS"
+          },
+          "comment": "边角边：两边及其夹角对应相等",
+          "expand_to": [
+            {
+              "type": "equal_length",
+              "segments": [
+                [
+                  "$triangles[0][0]",
+                  "$triangles[0][1]"
+                ],
+                [
+                  "$triangles[1][0]",
+                  "$triangles[1][1]"
+                ]
+              ]
+            },
+            {
+              "type": "equal_angle",
+              "angles": [
+                [
+                  "$triangles[0][0]",
+                  "$triangles[0][1]",
+                  "$triangles[0][2]"
+                ],
+                [
+                  "$triangles[1][0]",
+                  "$triangles[1][1]",
+                  "$triangles[1][2]"
+                ]
+              ]
+            },
+            {
+              "type": "equal_length",
+              "segments": [
+                [
+                  "$triangles[0][1]",
+                  "$triangles[0][2]"
+                ],
+                [
+                  "$triangles[1][1]",
+                  "$triangles[1][2]"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "when": {
+            "rule": "ASA"
+          },
+          "comment": "角边角：两角及其夹边对应相等",
+          "expand_to": [
+            {
+              "type": "equal_angle",
+              "angles": [
+                [
+                  "$triangles[0][1]",
+                  "$triangles[0][0]",
+                  "$triangles[0][2]"
+                ],
+                [
+                  "$triangles[1][1]",
+                  "$triangles[1][0]",
+                  "$triangles[1][2]"
+                ]
+              ]
+            },
+            {
+              "type": "equal_length",
+              "segments": [
+                [
+                  "$triangles[0][0]",
+                  "$triangles[0][2]"
+                ],
+                [
+                  "$triangles[1][0]",
+                  "$triangles[1][2]"
+                ]
+              ]
+            },
+            {
+              "type": "equal_angle",
+              "angles": [
+                [
+                  "$triangles[0][0]",
+                  "$triangles[0][2]",
+                  "$triangles[0][1]"
+                ],
+                [
+                  "$triangles[1][0]",
+                  "$triangles[1][2]",
+                  "$triangles[1][1]"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "when": {
+            "rule": "AAS"
+          },
+          "comment": "角角边：两角及非夹边对应相等",
+          "expand_to": [
+            {
+              "type": "equal_angle",
+              "angles": [
+                [
+                  "$triangles[0][1]",
+                  "$triangles[0][0]",
+                  "$triangles[0][2]"
+                ],
+                [
+                  "$triangles[1][1]",
+                  "$triangles[1][0]",
+                  "$triangles[1][2]"
+                ]
+              ]
+            },
+            {
+              "type": "equal_angle",
+              "angles": [
+                [
+                  "$triangles[0][0]",
+                  "$triangles[0][1]",
+                  "$triangles[0][2]"
+                ],
+                [
+                  "$triangles[1][0]",
+                  "$triangles[1][1]",
+                  "$triangles[1][2]"
+                ]
+              ]
+            },
+            {
+              "type": "equal_length",
+              "segments": [
+                [
+                  "$triangles[0][1]",
+                  "$triangles[0][2]"
+                ],
+                [
+                  "$triangles[1][1]",
+                  "$triangles[1][2]"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "when": {
+            "rule": "HL"
+          },
+          "comment": "斜边直角边（直角三角形）：斜边和一条直角边对应相等",
+          "expand_to": [
+            {
+              "type": "perpendicular",
+              "lines": [
+                [
+                  "$triangles[0][0]",
+                  "$triangles[0][1]"
+                ],
+                [
+                  "$triangles[0][1]",
+                  "$triangles[0][2]"
+                ]
+              ]
+            },
+            {
+              "type": "perpendicular",
+              "lines": [
+                [
+                  "$triangles[1][0]",
+                  "$triangles[1][1]"
+                ],
+                [
+                  "$triangles[1][1]",
+                  "$triangles[1][2]"
+                ]
+              ]
+            },
+            {
+              "type": "equal_length",
+              "segments": [
+                [
+                  "$triangles[0][0]",
+                  "$triangles[0][2]"
+                ],
+                [
+                  "$triangles[1][0]",
+                  "$triangles[1][2]"
+                ]
+              ]
+            },
+            {
+              "type": "equal_length",
+              "segments": [
+                [
+                  "$triangles[0][0]",
+                  "$triangles[0][1]"
+                ],
+                [
+                  "$triangles[1][0]",
+                  "$triangles[1][1]"
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "similar_triangle",
+      "comment": "相似三角形 = 三角对应相等 + 三边成比例（顶点按顺序对应）",
+      "expand_to": [
+        {
+          "type": "equal_angle",
+          "angles": [
+            [
+              "$triangles[0][1]",
+              "$triangles[0][0]",
+              "$triangles[0][2]"
+            ],
+            [
+              "$triangles[1][1]",
+              "$triangles[1][0]",
+              "$triangles[1][2]"
+            ]
+          ]
+        },
+        {
+          "type": "equal_angle",
+          "angles": [
+            [
+              "$triangles[0][0]",
+              "$triangles[0][1]",
+              "$triangles[0][2]"
+            ],
+            [
+              "$triangles[1][0]",
+              "$triangles[1][1]",
+              "$triangles[1][2]"
+            ]
+          ]
+        },
+        {
+          "type": "equal_angle",
+          "angles": [
+            [
+              "$triangles[0][0]",
+              "$triangles[0][2]",
+              "$triangles[0][1]"
+            ],
+            [
+              "$triangles[1][0]",
+              "$triangles[1][2]",
+              "$triangles[1][1]"
+            ]
+          ]
+        },
+        {
+          "type": "proportional_length",
+          "segment1": [
+            "$triangles[0][0]",
+            "$triangles[0][1]"
+          ],
+          "segment2": [
+            "$triangles[1][0]",
+            "$triangles[1][1]"
+          ],
+          "ratio": "$ratio"
+        },
+        {
+          "type": "proportional_length",
+          "segment1": [
+            "$triangles[0][1]",
+            "$triangles[0][2]"
+          ],
+          "segment2": [
+            "$triangles[1][1]",
+            "$triangles[1][2]"
+          ],
+          "ratio": "$ratio"
+        },
+        {
+          "type": "proportional_length",
+          "segment1": [
+            "$triangles[0][2]",
+            "$triangles[0][0]"
+          ],
+          "segment2": [
+            "$triangles[1][2]",
+            "$triangles[1][0]"
+          ],
+          "ratio": "$ratio"
+        }
+      ]
+    },
+    {
+      "hir": "trapezoid",
+      "comment": "梯形 = 一组对边平行（约定 points[0]points[1] ∥ points[2]points[3]）",
+      "expand_to": [
+        {
+          "type": "parallel",
+          "lines": [
+            [
+              "$points[0]",
+              "$points[1]"
+            ],
+            [
+              "$points[2]",
+              "$points[3]"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "cyclic_quadrilateral",
+      "comment": "圆内接四边形 = 四点共圆",
+      "expand_to": [
+        {
+          "type": "point_on_circle",
+          "point": "$points[0]",
+          "circle": "$circle"
+        },
+        {
+          "type": "point_on_circle",
+          "point": "$points[1]",
+          "circle": "$circle"
+        },
+        {
+          "type": "point_on_circle",
+          "point": "$points[2]",
+          "circle": "$circle"
+        },
+        {
+          "type": "point_on_circle",
+          "point": "$points[3]",
+          "circle": "$circle"
+        }
+      ]
+    },
+    {
+      "hir": "secant",
+      "comment": "割线 = 直线与圆有两个交点",
+      "expand_to": [
+        {
+          "type": "intersection",
+          "point": "$point1",
+          "objects": [
+            "$line",
+            "$circle"
+          ]
+        },
+        {
+          "type": "intersection",
+          "point": "$point2",
+          "objects": [
+            "$line",
+            "$circle"
+          ]
+        },
+        {
+          "type": "point_on_line",
+          "point": "$point1",
+          "line": "$line"
+        },
+        {
+          "type": "point_on_line",
+          "point": "$point2",
+          "line": "$line"
         }
       ]
     }
