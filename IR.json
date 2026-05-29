@@ -109,6 +109,16 @@
           "Point"
         ]
       }
+    },
+    {
+      "type": "angle",
+      "comment": "角：顶点 + 两条射线上的点",
+      "fields": {
+        "id": "AngleName",
+        "vertex": "Point",
+        "ray1": "Point",
+        "ray2": "Point"
+      }
     }
   ],
   "primitive_constraints": [
@@ -285,6 +295,50 @@
         "point": "Point",
         "circle": "Circle"
       }
+    },
+    {
+      "type": "reflect",
+      "comment": "反射/对称（折叠）",
+      "fields": {
+        "source": "Point",
+        "image": "Point",
+        "axis": [
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "rotate",
+      "comment": "旋转",
+      "fields": {
+        "source": "Point",
+        "image": "Point",
+        "center": "Point",
+        "angle_degrees": "Number"
+      }
+    },
+    {
+      "type": "translate",
+      "comment": "平移",
+      "fields": {
+        "source": "Point",
+        "image": "Point",
+        "vector": [
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "dilate",
+      "comment": "缩放",
+      "fields": {
+        "source": "Point",
+        "image": "Point",
+        "center": "Point",
+        "ratio": "Number"
+      }
     }
   ],
   "hir_constraints": [
@@ -369,14 +423,14 @@
     },
     {
       "type": "extension_point",
-      "comment": "延长线上的点",
+      "comment": "延长线上的点（beyond_first=向起点方向延长，beyond_second=向终点方向延长）",
       "fields": {
         "base": [
           "Point",
           "Point"
         ],
         "point": "Point",
-        "topology": "String"
+        "topology": "beyond_first|beyond_second"
       }
     },
     {
@@ -387,7 +441,13 @@
           "Triangle",
           "Triangle"
         ],
-        "rule": "SSS|SAS|ASA|AAS|HL"
+        "rule": [
+          "SSS",
+          "SAS",
+          "ASA",
+          "AAS",
+          "HL"
+        ]
       }
     },
     {
@@ -515,6 +575,111 @@
           "Point"
         ]
       }
+    },
+    {
+      "type": "perpendicular_bisector",
+      "comment": "垂直平分线",
+      "fields": {
+        "line": [
+          "Point",
+          "Point"
+        ],
+        "segment": [
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "median",
+      "comment": "中线（顶点到对边中点）",
+      "fields": {
+        "vertex": "Point",
+        "midpoint": "Point",
+        "opposite_side": [
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "altitude",
+      "comment": "高线（顶点到对边的垂线段）",
+      "fields": {
+        "vertex": "Point",
+        "foot": "Point",
+        "opposite_side": [
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "circumscribed_circle",
+      "comment": "外接圆",
+      "fields": {
+        "circle": "Circle",
+        "triangle": [
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "inscribed_circle",
+      "comment": "内切圆",
+      "fields": {
+        "circle": "Circle",
+        "triangle": [
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "arc",
+      "comment": "弧",
+      "fields": {
+        "id": "ArcName",
+        "circle": "Circle",
+        "start": "Point",
+        "end": "Point"
+      }
+    },
+    {
+      "type": "central_angle",
+      "comment": "圆心角",
+      "fields": {
+        "center": "Point",
+        "angle": [
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "inscribed_angle",
+      "comment": "圆周角",
+      "fields": {
+        "vertex": "Point",
+        "points": [
+          "Point",
+          "Point"
+        ],
+        "circle": "Circle"
+      }
+    },
+    {
+      "type": "circle_by_radius",
+      "comment": "圆心+半径值定义圆",
+      "fields": {
+        "id": "CircleName",
+        "center": "Point",
+        "radius": "Number"
+      }
     }
   ],
   "lowering_rules": [
@@ -568,10 +733,18 @@
     },
     {
       "hir": "point_on_ray",
-      "comment": "点在射线上",
+      "comment": "点在射线上 = 共线 + 在方向侧",
       "expand_to": [
         {
           "type": "collinear",
+          "points": [
+            "$ray[0]",
+            "$ray[1]",
+            "$point"
+          ]
+        },
+        {
+          "type": "between",
           "points": [
             "$ray[0]",
             "$ray[1]",
@@ -636,20 +809,29 @@
               "$circle.center",
               "$point"
             ],
-            "$line"
+            [
+              "$line[0]",
+              "$line[1]"
+            ]
           ]
         }
       ]
     },
     {
       "hir": "isosceles_triangle",
-      "comment": "等腰三角形 = 两边等长",
+      "comment": "等腰三角形 = 两腰等长",
       "expand_to": [
         {
           "type": "equal_length",
           "segments": [
-            "$equal_sides[0]",
-            "$equal_sides[1]"
+            [
+              "$equal_sides[0][0]",
+              "$equal_sides[0][1]"
+            ],
+            [
+              "$equal_sides[1][0]",
+              "$equal_sides[1][1]"
+            ]
           ]
         }
       ]
@@ -884,6 +1066,283 @@
           ]
         }
       ]
+    },
+    {
+      "hir": "perpendicular_bisector",
+      "comment": "垂直平分线 = 过中点 + 垂直",
+      "expand_to": [
+        {
+          "type": "between",
+          "points": [
+            "$segment[0]",
+            "$line[0]",
+            "$segment[1]"
+          ]
+        },
+        {
+          "type": "equal_length",
+          "segments": [
+            [
+              "$segment[0]",
+              "$line[0]"
+            ],
+            [
+              "$line[0]",
+              "$segment[1]"
+            ]
+          ]
+        },
+        {
+          "type": "perpendicular",
+          "lines": [
+            [
+              "$line[0]",
+              "$line[1]"
+            ],
+            [
+              "$segment[0]",
+              "$segment[1]"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "median",
+      "comment": "中线 = 对边中点",
+      "expand_to": [
+        {
+          "type": "between",
+          "points": [
+            "$opposite_side[0]",
+            "$midpoint",
+            "$opposite_side[1]"
+          ]
+        },
+        {
+          "type": "equal_length",
+          "segments": [
+            [
+              "$opposite_side[0]",
+              "$midpoint"
+            ],
+            [
+              "$midpoint",
+              "$opposite_side[1]"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "altitude",
+      "comment": "高线 = 垂足在对边上 + 垂直",
+      "expand_to": [
+        {
+          "type": "perpendicular",
+          "lines": [
+            [
+              "$vertex",
+              "$foot"
+            ],
+            [
+              "$opposite_side[0]",
+              "$opposite_side[1]"
+            ]
+          ]
+        },
+        {
+          "type": "point_on_line",
+          "point": "$foot",
+          "line": [
+            "$opposite_side[0]",
+            "$opposite_side[1]"
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "circumscribed_circle",
+      "comment": "外接圆 = 三顶点到圆心等距",
+      "expand_to": [
+        {
+          "type": "equal_length",
+          "segments": [
+            [
+              "$circle.center",
+              "$triangle[0]"
+            ],
+            [
+              "$circle.center",
+              "$triangle[1]"
+            ]
+          ]
+        },
+        {
+          "type": "equal_length",
+          "segments": [
+            [
+              "$circle.center",
+              "$triangle[1]"
+            ],
+            [
+              "$circle.center",
+              "$triangle[2]"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "inscribed_circle",
+      "comment": "内切圆 = 圆心到三边等距",
+      "expand_to": [
+        {
+          "type": "perpendicular",
+          "lines": [
+            [
+              "$circle.center",
+              "$triangle[0]"
+            ],
+            [
+              "$triangle[0]",
+              "$triangle[1]"
+            ]
+          ]
+        },
+        {
+          "type": "perpendicular",
+          "lines": [
+            [
+              "$circle.center",
+              "$triangle[1]"
+            ],
+            [
+              "$triangle[1]",
+              "$triangle[2]"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "central_angle",
+      "comment": "圆心角 = 顶点在圆心",
+      "expand_to": [
+        {
+          "type": "point_on_circle",
+          "point": "$angle[0]",
+          "circle": "$center"
+        },
+        {
+          "type": "point_on_circle",
+          "point": "$angle[2]",
+          "circle": "$center"
+        }
+      ]
+    },
+    {
+      "hir": "inscribed_angle",
+      "comment": "圆周角 = 顶点在圆上，两边交圆",
+      "expand_to": [
+        {
+          "type": "point_on_circle",
+          "point": "$vertex",
+          "circle": "$circle"
+        },
+        {
+          "type": "point_on_circle",
+          "point": "$points[0]",
+          "circle": "$circle"
+        },
+        {
+          "type": "point_on_circle",
+          "point": "$points[1]",
+          "circle": "$circle"
+        }
+      ]
+    }
+  ],
+  "render_hints": [
+    {
+      "hint": "label",
+      "comment": "显示对象标签",
+      "fields": {
+        "target": "ObjectRef",
+        "text": "String",
+        "position": "above|below|left|right|above_left|above_right|below_left|below_right"
+      }
+    },
+    {
+      "hint": "dash_mark",
+      "comment": "等长记号（单杠/双杠/三杠）",
+      "fields": {
+        "segments": [
+          [
+            "Point",
+            "Point"
+          ],
+          [
+            "Point",
+            "Point"
+          ]
+        ],
+        "mark_type": "single|double|triple"
+      }
+    },
+    {
+      "hint": "angle_arc",
+      "comment": "角度弧线标记",
+      "fields": {
+        "angle": [
+          "Point",
+          "Point",
+          "Point"
+        ],
+        "arc_count": 1,
+        "label": "String"
+      }
+    },
+    {
+      "hint": "right_angle_mark",
+      "comment": "直角标记（方框）",
+      "fields": {
+        "angle": [
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "hint": "hidden",
+      "comment": "隐藏对象（不渲染）",
+      "fields": {
+        "target": "ObjectRef"
+      }
+    },
+    {
+      "hint": "dashed",
+      "comment": "虚线（辅助线/延长线）",
+      "fields": {
+        "target": "ObjectRef"
+      }
+    },
+    {
+      "hint": "color",
+      "comment": "对象颜色",
+      "fields": {
+        "target": "ObjectRef",
+        "color": "String"
+      }
+    },
+    {
+      "hint": "thickness",
+      "comment": "线宽",
+      "fields": {
+        "target": "ObjectRef",
+        "thickness": "thin|normal|thick"
+      }
     }
   ]
 }
