@@ -1,0 +1,889 @@
+{
+  "version": "k12-geometry-ir-v1",
+  "comment": "K12 Geometry Unified IR System",
+  "primitive_types": [
+    {
+      "type": "Point",
+      "comment": "点"
+    },
+    {
+      "type": "Line",
+      "comment": "直线"
+    },
+    {
+      "type": "Segment",
+      "comment": "线段"
+    },
+    {
+      "type": "Ray",
+      "comment": "射线"
+    },
+    {
+      "type": "Circle",
+      "comment": "圆"
+    },
+    {
+      "type": "Angle",
+      "comment": "角"
+    },
+    {
+      "type": "Triangle",
+      "comment": "三角形"
+    },
+    {
+      "type": "Quadrilateral",
+      "comment": "四边形"
+    }
+  ],
+  "object_defs": [
+    {
+      "type": "point",
+      "comment": "定义点",
+      "fields": {
+        "id": "PointName"
+      }
+    },
+    {
+      "type": "line",
+      "comment": "通过两点定义直线",
+      "fields": {
+        "id": "LineName",
+        "through": [
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "segment",
+      "comment": "通过两点定义线段",
+      "fields": {
+        "id": "SegmentName",
+        "points": [
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "ray",
+      "comment": "通过起点和方向点定义射线",
+      "fields": {
+        "id": "RayName",
+        "points": [
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "circle",
+      "comment": "圆：圆心+圆上一点",
+      "fields": {
+        "id": "CircleName",
+        "center": "Point",
+        "radius_point": "Point"
+      }
+    },
+    {
+      "type": "triangle",
+      "comment": "三角形",
+      "fields": {
+        "id": "TriangleName",
+        "points": [
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "quadrilateral",
+      "comment": "四边形",
+      "fields": {
+        "id": "QuadrilateralName",
+        "points": [
+          "Point",
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    }
+  ],
+  "primitive_constraints": [
+    {
+      "type": "point_on_line",
+      "comment": "点在线上",
+      "fields": {
+        "point": "Point",
+        "line": [
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "point_on_circle",
+      "comment": "点在圆上",
+      "fields": {
+        "point": "Point",
+        "circle": "Circle"
+      }
+    },
+    {
+      "type": "intersection",
+      "comment": "交点",
+      "fields": {
+        "point": "Point",
+        "objects": [
+          "GeometryObject",
+          "GeometryObject"
+        ]
+      }
+    },
+    {
+      "type": "collinear",
+      "comment": "三点共线",
+      "fields": {
+        "points": [
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "between",
+      "comment": "有序共线关系 A-B-C",
+      "fields": {
+        "points": [
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "same_side",
+      "comment": "两点在线同侧",
+      "fields": {
+        "points": [
+          "Point",
+          "Point"
+        ],
+        "line": [
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "opposite_side",
+      "comment": "两点在线异侧",
+      "fields": {
+        "points": [
+          "Point",
+          "Point"
+        ],
+        "line": [
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "equal_length",
+      "comment": "线段长度相等",
+      "fields": {
+        "segments": [
+          [
+            "Point",
+            "Point"
+          ],
+          [
+            "Point",
+            "Point"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "equal_angle",
+      "comment": "角相等",
+      "fields": {
+        "angles": [
+          [
+            "Point",
+            "Point",
+            "Point"
+          ],
+          [
+            "Point",
+            "Point",
+            "Point"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "parallel",
+      "comment": "平行",
+      "fields": {
+        "lines": [
+          [
+            "Point",
+            "Point"
+          ],
+          [
+            "Point",
+            "Point"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "perpendicular",
+      "comment": "垂直",
+      "fields": {
+        "lines": [
+          [
+            "Point",
+            "Point"
+          ],
+          [
+            "Point",
+            "Point"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "inside_angle",
+      "comment": "点在角内部",
+      "fields": {
+        "point": "Point",
+        "angle": [
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "inside_circle",
+      "comment": "点在圆内",
+      "fields": {
+        "point": "Point",
+        "circle": "Circle"
+      }
+    },
+    {
+      "type": "outside_circle",
+      "comment": "点在圆外",
+      "fields": {
+        "point": "Point",
+        "circle": "Circle"
+      }
+    }
+  ],
+  "hir_constraints": [
+    {
+      "type": "midpoint",
+      "comment": "中点",
+      "fields": {
+        "point": "Point",
+        "segment": [
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "angle_bisector",
+      "comment": "角平分线",
+      "fields": {
+        "point": "Point",
+        "angle": [
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "point_on_ray",
+      "comment": "点在射线上",
+      "fields": {
+        "point": "Point",
+        "ray": [
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "tangent",
+      "comment": "切线",
+      "fields": {
+        "line": [
+          "Point",
+          "Point"
+        ],
+        "circle": "Circle",
+        "point": "Point"
+      }
+    },
+    {
+      "type": "secant",
+      "comment": "割线",
+      "fields": {
+        "line": [
+          "Point",
+          "Point"
+        ],
+        "circle": "Circle"
+      }
+    },
+    {
+      "type": "diameter",
+      "comment": "直径",
+      "fields": {
+        "segment": [
+          "Point",
+          "Point"
+        ],
+        "circle": "Circle"
+      }
+    },
+    {
+      "type": "chord",
+      "comment": "弦",
+      "fields": {
+        "segment": [
+          "Point",
+          "Point"
+        ],
+        "circle": "Circle"
+      }
+    },
+    {
+      "type": "extension_point",
+      "comment": "延长线上的点",
+      "fields": {
+        "base": [
+          "Point",
+          "Point"
+        ],
+        "point": "Point",
+        "topology": "String"
+      }
+    },
+    {
+      "type": "congruent_triangle",
+      "comment": "全等三角形",
+      "fields": {
+        "triangles": [
+          "Triangle",
+          "Triangle"
+        ],
+        "rule": "SSS|SAS|ASA|AAS|HL"
+      }
+    },
+    {
+      "type": "similar_triangle",
+      "comment": "相似三角形",
+      "fields": {
+        "triangles": [
+          "Triangle",
+          "Triangle"
+        ]
+      }
+    },
+    {
+      "type": "isosceles_triangle",
+      "comment": "等腰三角形",
+      "fields": {
+        "triangle": "Triangle",
+        "equal_sides": [
+          [
+            "Point",
+            "Point"
+          ],
+          [
+            "Point",
+            "Point"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "equilateral_triangle",
+      "comment": "等边三角形",
+      "fields": {
+        "triangle": [
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "right_triangle",
+      "comment": "直角三角形",
+      "fields": {
+        "triangle": [
+          "Point",
+          "Point",
+          "Point"
+        ],
+        "right_angle": [
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "parallelogram",
+      "comment": "平行四边形",
+      "fields": {
+        "points": [
+          "Point",
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "rectangle",
+      "comment": "矩形",
+      "fields": {
+        "points": [
+          "Point",
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "square",
+      "comment": "正方形",
+      "fields": {
+        "points": [
+          "Point",
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "rhombus",
+      "comment": "菱形",
+      "fields": {
+        "points": [
+          "Point",
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "trapezoid",
+      "comment": "梯形",
+      "fields": {
+        "points": [
+          "Point",
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    },
+    {
+      "type": "cyclic_quadrilateral",
+      "comment": "圆内接四边形",
+      "fields": {
+        "points": [
+          "Point",
+          "Point",
+          "Point",
+          "Point"
+        ]
+      }
+    }
+  ],
+  "lowering_rules": [
+    {
+      "hir": "midpoint",
+      "comment": "中点 = 在线段内部 + 两边等长",
+      "expand_to": [
+        {
+          "type": "between",
+          "points": [
+            "$segment[0]",
+            "$point",
+            "$segment[1]"
+          ]
+        },
+        {
+          "type": "equal_length",
+          "segments": [
+            [
+              "$segment[0]",
+              "$point"
+            ],
+            [
+              "$point",
+              "$segment[1]"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "angle_bisector",
+      "comment": "角平分线 = 两角相等",
+      "expand_to": [
+        {
+          "type": "equal_angle",
+          "angles": [
+            [
+              "$angle[0]",
+              "$angle[1]",
+              "$point"
+            ],
+            [
+              "$point",
+              "$angle[1]",
+              "$angle[2]"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "point_on_ray",
+      "comment": "点在射线上",
+      "expand_to": [
+        {
+          "type": "collinear",
+          "points": [
+            "$ray[0]",
+            "$ray[1]",
+            "$point"
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "diameter",
+      "comment": "直径 = 两端点在圆上 + 圆心共线",
+      "expand_to": [
+        {
+          "type": "point_on_circle",
+          "point": "$segment[0]",
+          "circle": "$circle"
+        },
+        {
+          "type": "point_on_circle",
+          "point": "$segment[1]",
+          "circle": "$circle"
+        },
+        {
+          "type": "collinear",
+          "points": [
+            "$segment[0]",
+            "$circle.center",
+            "$segment[1]"
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "chord",
+      "comment": "弦 = 两端点在圆上",
+      "expand_to": [
+        {
+          "type": "point_on_circle",
+          "point": "$segment[0]",
+          "circle": "$circle"
+        },
+        {
+          "type": "point_on_circle",
+          "point": "$segment[1]",
+          "circle": "$circle"
+        }
+      ]
+    },
+    {
+      "hir": "tangent",
+      "comment": "切线 = 半径垂直切线",
+      "expand_to": [
+        {
+          "type": "point_on_circle",
+          "point": "$point",
+          "circle": "$circle"
+        },
+        {
+          "type": "perpendicular",
+          "lines": [
+            [
+              "$circle.center",
+              "$point"
+            ],
+            "$line"
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "isosceles_triangle",
+      "comment": "等腰三角形 = 两边等长",
+      "expand_to": [
+        {
+          "type": "equal_length",
+          "segments": [
+            "$equal_sides[0]",
+            "$equal_sides[1]"
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "equilateral_triangle",
+      "comment": "等边三角形 = 三边等长",
+      "expand_to": [
+        {
+          "type": "equal_length",
+          "segments": [
+            [
+              "$triangle[0]",
+              "$triangle[1]"
+            ],
+            [
+              "$triangle[1]",
+              "$triangle[2]"
+            ]
+          ]
+        },
+        {
+          "type": "equal_length",
+          "segments": [
+            [
+              "$triangle[1]",
+              "$triangle[2]"
+            ],
+            [
+              "$triangle[2]",
+              "$triangle[0]"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "right_triangle",
+      "comment": "直角三角形 = 两边垂直",
+      "expand_to": [
+        {
+          "type": "perpendicular",
+          "lines": [
+            [
+              "$right_angle[0]",
+              "$right_angle[1]"
+            ],
+            [
+              "$right_angle[1]",
+              "$right_angle[2]"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "parallelogram",
+      "comment": "平行四边形 = 两组对边平行",
+      "expand_to": [
+        {
+          "type": "parallel",
+          "lines": [
+            [
+              "$points[0]",
+              "$points[1]"
+            ],
+            [
+              "$points[2]",
+              "$points[3]"
+            ]
+          ]
+        },
+        {
+          "type": "parallel",
+          "lines": [
+            [
+              "$points[1]",
+              "$points[2]"
+            ],
+            [
+              "$points[3]",
+              "$points[0]"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "rectangle",
+      "comment": "矩形 = 平行四边形 + 一个直角",
+      "expand_to": [
+        {
+          "type": "parallel",
+          "lines": [
+            [
+              "$points[0]",
+              "$points[1]"
+            ],
+            [
+              "$points[2]",
+              "$points[3]"
+            ]
+          ]
+        },
+        {
+          "type": "parallel",
+          "lines": [
+            [
+              "$points[1]",
+              "$points[2]"
+            ],
+            [
+              "$points[3]",
+              "$points[0]"
+            ]
+          ]
+        },
+        {
+          "type": "perpendicular",
+          "lines": [
+            [
+              "$points[0]",
+              "$points[1]"
+            ],
+            [
+              "$points[1]",
+              "$points[2]"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "square",
+      "comment": "正方形 = 矩形 + 邻边等长",
+      "expand_to": [
+        {
+          "type": "parallel",
+          "lines": [
+            [
+              "$points[0]",
+              "$points[1]"
+            ],
+            [
+              "$points[2]",
+              "$points[3]"
+            ]
+          ]
+        },
+        {
+          "type": "parallel",
+          "lines": [
+            [
+              "$points[1]",
+              "$points[2]"
+            ],
+            [
+              "$points[3]",
+              "$points[0]"
+            ]
+          ]
+        },
+        {
+          "type": "perpendicular",
+          "lines": [
+            [
+              "$points[0]",
+              "$points[1]"
+            ],
+            [
+              "$points[1]",
+              "$points[2]"
+            ]
+          ]
+        },
+        {
+          "type": "equal_length",
+          "segments": [
+            [
+              "$points[0]",
+              "$points[1]"
+            ],
+            [
+              "$points[1]",
+              "$points[2]"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "hir": "rhombus",
+      "comment": "菱形 = 平行四边形 + 邻边等长",
+      "expand_to": [
+        {
+          "type": "parallel",
+          "lines": [
+            [
+              "$points[0]",
+              "$points[1]"
+            ],
+            [
+              "$points[2]",
+              "$points[3]"
+            ]
+          ]
+        },
+        {
+          "type": "parallel",
+          "lines": [
+            [
+              "$points[1]",
+              "$points[2]"
+            ],
+            [
+              "$points[3]",
+              "$points[0]"
+            ]
+          ]
+        },
+        {
+          "type": "equal_length",
+          "segments": [
+            [
+              "$points[0]",
+              "$points[1]"
+            ],
+            [
+              "$points[1]",
+              "$points[2]"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}
